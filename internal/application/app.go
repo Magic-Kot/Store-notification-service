@@ -14,6 +14,7 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	"github.com/Magic-Kot/Store-notification-service/internal/config"
+	"github.com/Magic-Kot/Store-notification-service/internal/domain/subjects"
 	"github.com/Magic-Kot/Store-notification-service/pkg/logging"
 	n "github.com/Magic-Kot/Store-notification-service/pkg/nats"
 )
@@ -26,9 +27,6 @@ type App struct {
 
 	postgresClient *sqlx.DB
 	natsClient     *nats.Conn
-
-	//dbUser      persistence.DBUser
-	//userService *service.User
 }
 
 func New(name, version string, cfg config.Config) *App {
@@ -63,6 +61,11 @@ func (app *App) Run() error {
 	}
 
 	app.natsClient = natsClient
+
+	err = subjects.SubscribeNotification(app.natsClient)
+	if err != nil {
+		return fmt.Errorf("subjects.SubscribeNotification: %w", err)
+	}
 
 	app.runServer(ctx, g)
 
