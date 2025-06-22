@@ -2,11 +2,16 @@ package config
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/caarlos0/env/v6"
 )
 
 type Config struct {
+	Server struct {
+		ShutdownTimeout time.Duration `env:"HTTP_SHUTDOWN_TIMEOUT" envDefault:"30s"`
+	}
+
 	Nats struct {
 		URL string `env:"NATS_URL,notEmpty"`
 	}
